@@ -1,18 +1,18 @@
 import { app, BrowserWindow } from 'electron'; 
 import path from 'path';
-import { fileURLToPath } from 'url'; // Needed for ESM to get file path
+import { fileURLToPath } from 'url'; // for esm
 import squirrelStartup from 'electron-squirrel-startup';
 import './database/db'
 import { seedDefaultCategories } from './database/seed';
 import { insertClip,getAllClips } from './database/clips';
 import { getAllCategories } from './database/categories';
 import { startClipboardMonitor, stopClipboardMonitor } from './clipboard/monitor'
+import { notifyClip, setupIpcHandlers } from './ipc-handlers';
 
 // --- ESM Path Resolution ---
-// Define __filename and __dirname equivalents for ES Module context
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// ---------------------------
+
 
 if(squirrelStartup){
     app.quit()
@@ -36,7 +36,7 @@ function createWindow() {
         mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
         mainWindow.webContents.openDevTools(); //open dev tools
     } else { 
-        // __dirname is now defined and works
+       
         mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
     }
 
@@ -47,13 +47,17 @@ function createWindow() {
 
 app.whenReady().then(() => {
     seedDefaultCategories()
-    createWindow()
+
+    setupIpcHandlers()
 
     console.log('Categories:', getAllCategories())
     console.log('Clips:', getAllClips())
 
+    createWindow()
+
     startClipboardMonitor((clip) => {
         console.log('New saved clip:',clip)
+        notifyClip(clip)
     })
 
     app.on('activate', () => {
@@ -66,7 +70,7 @@ app.whenReady().then(() => {
 
 // Quit when all windows are closed, except on macOS
 app.on('window-all-closed', () => {
-    stopClipboardMonitor
+    stopClipboardMonitor()
   if (process.platform !== 'darwin') {
     app.quit()
   }
