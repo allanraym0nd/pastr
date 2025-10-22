@@ -2,6 +2,11 @@ import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url'; // Needed for ESM to get file path
 import squirrelStartup from 'electron-squirrel-startup';
+import './database/db'
+import { seedDefaultCategories } from './database/seed';
+import { insertClip,getAllClips } from './database/clips';
+import { getAllCategories } from './database/categories';
+import { startClipboardMonitor, stopClipboardMonitor } from './clipboard/monitor'
 
 // --- ESM Path Resolution ---
 // Define __filename and __dirname equivalents for ES Module context
@@ -41,7 +46,15 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+    seedDefaultCategories()
     createWindow()
+
+    console.log('Categories:', getAllCategories())
+    console.log('Clips:', getAllClips())
+
+    startClipboardMonitor((clip) => {
+        console.log('New saved clip:',clip)
+    })
 
     app.on('activate', () => {
         // On macOS, re-create window when dock icon is clicked
@@ -53,6 +66,7 @@ app.whenReady().then(() => {
 
 // Quit when all windows are closed, except on macOS
 app.on('window-all-closed', () => {
+    stopClipboardMonitor
   if (process.platform !== 'darwin') {
     app.quit()
   }
