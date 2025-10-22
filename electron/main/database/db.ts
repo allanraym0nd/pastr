@@ -1,32 +1,52 @@
-import Database from "better-sqlite3";
+import Database from 'better-sqlite3'
 import path from 'path'
-import { fileURLToPath } from "url";
 import { app } from 'electron'
-import fs from 'fs'
+import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// store db in users app
-const userDataPath = app.getPath('userData') 
+const userDataPath = app.getPath('userData')
 const dbPath = path.join(userDataPath, 'clipboard.db')
 
 console.log('Database path:', dbPath)
 
-// initialize db 
-export const db:Database.Database = new Database(dbPath, { verbose: console.log })
+export const db: Database.Database = new Database(dbPath, { verbose: console.log })
 
-db.pragma('foreign_keys=ON')
+db.pragma('foreign_keys = ON')
 
-// Read and execute schema
-const schemaPath = path.join(__dirname, 'schema.sql')
-const schema = fs.readFileSync(schemaPath, 'utf-8')
+// Inline schema
+const schema = `
+CREATE TABLE IF NOT EXISTS clips (
+  id TEXT PRIMARY KEY,
+  type TEXT NOT NULL CHECK(type IN ('text', 'image', 'audio', 'file')),
+  content TEXT NOT NULL,
+  preview TEXT,
+  metadata TEXT,
+  created_at INTEGER NOT NULL,
+  category_id TEXT,
+  FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS categories (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  color TEXT NOT NULL,
+  icon TEXT,
+  position INTEGER NOT NULL,
+  created_at INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_clips_created_at ON clips(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_clips_category ON clips(category_id);
+CREATE INDEX IF NOT EXISTS idx_clips_type ON clips(type);
+`
 
 db.exec(schema)
 
 console.log('Database initialized successfully')
 
 process.on('exit', () => db.close())
-process.on('SIGHUP', () => process.exit(128+1))
-process.on('SIGINT', () => process.exit(128+2))
-process.on('SIGTERM', () => process.exit(128+15))
+process.on('SIGHUP', () => process.exit(128 + 1))
+process.on('SIGINT', () => process.exit(128 + 2))
+process.on('SIGTERM', () => process.exit(128 + 15))
