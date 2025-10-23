@@ -1,3 +1,5 @@
+// setting up the db connection
+
 import Database from 'better-sqlite3'
 import path from 'path'
 import { app } from 'electron'

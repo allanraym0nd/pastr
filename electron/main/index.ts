@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from 'electron'; 
 import path from 'path';
-import { fileURLToPath } from 'url'; // for esm
+import { fileURLToPath } from 'url'; //esm
 import squirrelStartup from 'electron-squirrel-startup';
 import './database/db'
 import { seedDefaultCategories } from './database/seed';
@@ -55,6 +55,7 @@ app.whenReady().then(() => {
 
     createWindow()
 
+    // Start clipboard monitoring and notify React of new clips
     startClipboardMonitor((clip) => {
         console.log('New saved clip:',clip)
         notifyClip(clip)
