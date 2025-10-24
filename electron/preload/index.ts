@@ -8,10 +8,10 @@ const { contextBridge, ipcRenderer } = require('electron');;
 contextBridge.exposeInMainWorld('electron', {
 
  clips: {
-    getAll: (limit?: number) => ipcRenderer.invoke('clips.getAll', limit),
-    getClipsByCategory: (categoryId: string) => ipcRenderer.invoke('clips.getClipsByCategory', categoryId),
+    getAll: (limit?: number) => ipcRenderer.invoke('clips:getAll', limit),
+    getClipsByCategory: (categoryId: string) => ipcRenderer.invoke('clips:getClipsByCategory', categoryId),
     delete: (clipId: string) => ipcRenderer.invoke('clips:delete', clipId),
-    updateClipCategory: (clipId: string, categoryId: string) => ipcRenderer.invoke("clips.updateClipCategory", clipId,categoryId),
+    updateClipCategory: (clipId: string, categoryId: string) => ipcRenderer.invoke("clips:updateClipCategory", clipId,categoryId),
     search: (query: string) => ipcRenderer.invoke('clips:search', query),
     //on new lets react listen to new clipboard items
     onNew: (callback: (clip:any) => void) => { 
