@@ -17,6 +17,7 @@
     "better-sqlite3": "^12.4.1",
     "electron": "^38.3.0",
     "electron-squirrel-startup": "^1.0.1",
+    "lucide-react": "^0.546.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
