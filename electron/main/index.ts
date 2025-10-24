@@ -22,8 +22,10 @@ let mainWindow: BrowserWindow | null = null
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 1200,
-        height: 800,
+        width: 1400,
+        height: 300,
+        minWidth: 1200,   // Minimum width
+        minHeight: 100,   // Minimum height
         webPreferences: {
             // __dirname is now defined and works
             preload: path.join(__dirname, '../preload/index.js'), 
