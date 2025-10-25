@@ -9,7 +9,7 @@ contextBridge.exposeInMainWorld('electron', {
 
  clips: {
     getAll: (limit?: number) => ipcRenderer.invoke('clips:getAll', limit),
-    getClipsByCategory: (categoryId: string) => ipcRenderer.invoke('clips:getClipsByCategory', categoryId),
+   getByCategory: (categoryId: string) => ipcRenderer.invoke('clips:getByCategory', categoryId),
     delete: (clipId: string) => ipcRenderer.invoke('clips:delete', clipId),
     updateClipCategory: (clipId: string, categoryId: string) => ipcRenderer.invoke("clips:updateClipCategory", clipId,categoryId),
     search: (query: string) => ipcRenderer.invoke('clips:search', query),
