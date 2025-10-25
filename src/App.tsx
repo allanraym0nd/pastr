@@ -6,63 +6,75 @@ import { Clip,Category } from './types'
 function App() {
   const [clips, setClips] = useState<Clip[]>([])
   const [categories, setCategories] = useState<any[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [searchQuery,setSearchQuery] = useState("")
 
-  useEffect(() => {
-    // Fetch initial data
-    window.electron.clips.getAll().then(setClips)
-    window.electron.categories.getAll().then(setCategories)
+    useEffect(() => {
+      // Fetch initial data
+      window.electron.categories.getAll().then(setCategories)
+      loadClips()
 
-    // Listen for new clips
-    const unsubscribe = window.electron.clips.onNew((newClip) => {
-      console.log('New clip received in React:', newClip)
-      setClips(prev => [newClip, ...prev])
-    })
+      // Listen for new clips
+      const unsubscribe = window.electron.clips.onNew((newClip) => {
+        setClips(prev => [newClip, ...prev])
+      })
 
-    // Cleanup
-    return () => unsubscribe()
-  }, [])
+    
+      return () => unsubscribe()
+    }, [])
+
+
+    const loadClips = async() => {
+      if(selectedCategory){
+        const data = await window.electron.clips.getByCategory(selectedCategory)
+        setClips(data)
+      } else {
+        const data = await window.electron.clips.getAll(100)
+        setClips(data)
+      }
+
+    }
+
+    useEffect(() => {
+      loadClips()
+    },[selectedCategory])
+
+    const filteredClips = searchQuery
+        ? clips.filter(clip => 
+            clip.content.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        : clips
+
+    const handleCopy = (content: string) => {
+       navigator.clipboard.writeText(content)
+
+    }
+
+    const handleDelete = async(id: string) => {
+      await window.electron.clips.delete(id)
+      setClips(prev => prev.filter(clip => clip.id !== id))
+    }
 
   return (
-    <div className="h-screen bg-gray-100 p-8">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8">
-          Clipboard Manager
-        </h1>
-
-        <div className="grid grid-cols-2 gap-8">
-          {/* Categories */}
-          <div className="bg-white rounded-lg p-6 shadow">
-            <h2 className="text-xl font-semibold mb-4">Categories</h2>
-            <ul className="space-y-2">
-              {categories.map(cat => (
-                <li key={cat.id} className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded" style={{ backgroundColor: cat.color }}></span>
-                  <span>{cat.icon} {cat.name}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Clips */}
-          <div className="bg-white rounded-lg p-6 shadow">
-            <h2 className="text-xl font-semibold mb-4">Recent Clips ({clips.length})</h2>
-            <div className="space-y-3">
-              {clips.slice(0, 5).map(clip => (
-                <div key={clip.id} className="p-3 bg-gray-50 rounded border border-gray-200">
-                  <p className="text-sm text-gray-600 truncate">
-                    {clip.preview || clip.content}
-                  </p>
-                  <span className="text-xs text-gray-400">
-                    {new Date(clip.created_at).toLocaleTimeString()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+    <div className="h-screen flex flex-col bg-gray-50">
+      <TopBar
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
+      
+      <div className="flex-1 overflow-y-auto">
+        <ClipGrid
+          clips={filteredClips}
+          onCopy={handleCopy}
+          onDelete={handleDelete}
+        />
       </div>
     </div>
   )
+  
 }
 
 export default App
