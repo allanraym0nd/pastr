@@ -2,14 +2,15 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
+// Remove: import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 export default defineConfig({
   plugins: [
+    // Remove: tailwindcss(),
     react(),
     electron([
       {
-        // Main process
         entry: 'electron/main/index.ts',
         onstart(options) {
           options.startup()
@@ -24,7 +25,6 @@ export default defineConfig({
         }
       },
       {
-        // Preload script
         entry: 'electron/preload/index.ts',
         onstart(options) {
           options.reload()
