@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom scrollbar for clipboard grid */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
