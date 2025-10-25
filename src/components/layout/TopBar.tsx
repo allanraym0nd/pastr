@@ -17,57 +17,61 @@ export default function TopBar({
   onSearchChange
 }: TopBarProps) {
   return (
-    <div className="bg-white border-b border-gray-200 px-6 py-3">
-      <div className="flex items-center gap-4">
+    <div className="bg-gradient-to-b from-gray-50 to-white border-b border-gray-200 px-6 py-4">
+      <div className="flex items-center gap-3">
         {/* Search Bar */}
-        <div className="relative flex-shrink-0 w-64">
+        <div className="relative flex-shrink-0 w-56">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             placeholder="Search..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
           />
         </div>
 
-        {/* Categories */}
-        <div className="flex items-center gap-2 overflow-x-auto flex-1">
+        {/* Categories - Fixed width container with no overflow */}
+        <div className="flex items-center gap-2 flex-1">
           {/* All Clips (Clipboard) */}
           <button
             onClick={() => onSelectCategory(null)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
               selectedCategory === null
-                ? 'bg-gray-900 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-gray-800 text-white shadow-sm'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
             }`}
           >
-            <span className="text-lg">🕐</span>
+            <span className="text-base">🕐</span>
             Clipboard
           </button>
 
-          {/* Category Pills */}
-          {categories.map(category => (
-            <button
-              key={category.id}
-              onClick={() => onSelectCategory(category.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                selectedCategory === category.id
-                  ? 'text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-              style={{
-                backgroundColor: selectedCategory === category.id ? category.color : undefined
-              }}
-            >
-              {category.icon && <span className="text-base">{category.icon}</span>}
-              {category.name}
-            </button>
-          ))}
+          {/* Category Pills - Sort by position */}
+          {[...categories].sort((a, b) => a.position - b.position).map(category => {
+            const isSelected = selectedCategory === category.id
+            return (
+              <button
+                key={category.id}
+                onClick={() => onSelectCategory(category.id)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                  isSelected
+                    ? 'text-white shadow-sm'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                }`}
+                style={{
+                  backgroundColor: isSelected ? category.color : undefined
+                }}
+              >
+                {category.icon && <span className="text-base">{category.icon}</span>}
+                {category.name}
+                {isSelected && <span className="text-xs opacity-75">●</span>}
+              </button>
+            )
+          })}
 
           {/* Add Category Button */}
           <button
-            className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors flex-shrink-0"
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
             title="Add Category"
           >
             <Plus className="w-4 h-4" />
