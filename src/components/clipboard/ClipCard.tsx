@@ -1,5 +1,5 @@
 import { Clip } from '@/types'
-import { Copy, Trash2, Clock } from 'lucide-react'
+import { Copy, Trash2, Clock, GripVertical } from 'lucide-react'
 
 interface ClipCardProps {
   clip: Clip
@@ -33,16 +33,26 @@ export default function ClipCard({ clip, onCopy, onDelete }: ClipCardProps) {
     const hours = Math.floor(minutes / 60)
     if (hours < 24) return `${hours}h ago`
     return `${Math.floor(hours / 24)}d ago`
+  } 
+
+  //making card dragable 
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.effectAllowed = "move"
+    e.dataTransfer.setData("clipId",clip.id)
   }
+
 
   return (
     <div 
+      draggable
+      onDragStart={handleDragStart}
       className="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden cursor-pointer border border-gray-100"
       onClick={() => onCopy(clip.content)}
     >
       {/* Colored Header */}
       <div className={`${getCardColor()} px-4 py-2.5 flex items-center justify-between`}>
         <div className="flex items-center gap-2 text-white">
+           <GripVertical className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
           <span className="text-xs font-semibold uppercase tracking-wide">{clip.type}</span>
           <Clock className="w-3 h-3 opacity-75" />
           <span className="text-xs opacity-90">{timeAgo(clip.created_at)}</span>

@@ -21,7 +21,7 @@ export function setupIpcHandlers() {
     
   })
 
-  ipcMain.handle('clips:update', async (_event, clipId: string, categoryId:string | null) => {
+  ipcMain.handle('clips:updateClipCategory', async (_event, clipId: string, categoryId:string | null) => {
     updateClipCategory(clipId,categoryId)
     return { success: true }
   })

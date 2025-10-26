@@ -22,7 +22,7 @@ export interface ElectronAPI {
     getAll: (limit?: number) => Promise<Clip[]>
     getByCategory: (categoryId: string) => Promise<Clip[]>
     delete: (clipId: string) => Promise<{ success: boolean }>
-    updateCategory: (clipId: string, categoryId: string | null) => Promise<{ success: boolean }>
+    updateClipCategory: (clipId: string, categoryId: string | null) => Promise<{ success: boolean }>
     search: (query: string) => Promise<Clip[]>
     onNew: (callback: (clip: Clip) => void) => () => void
   }

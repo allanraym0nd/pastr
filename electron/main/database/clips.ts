@@ -75,6 +75,7 @@ export function updateClipCategory(clipId: string, categoryId: string | null): v
   `)
   
   stmt.run(categoryId, clipId)
+
 }
 
 export function deleteClip(clipId: string): void {
