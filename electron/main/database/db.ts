@@ -8,8 +8,8 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const userDataPath = app.getPath('userData')
-const dbPath = path.join(userDataPath, 'clipboard.db')
+const userDataPath = app.getPath('userData') // where’s the system directory that Electron should use for saving user-specific data for this app?
+const dbPath = path.join(userDataPath, 'clipboard.db') // 
 
 console.log('Database path:', dbPath)
 
