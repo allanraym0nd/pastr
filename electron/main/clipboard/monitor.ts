@@ -27,7 +27,7 @@ export function startClipboardMonitor(callback?: (clip: any) => void) {
 
                 console.log('Saved clip to database:', savedClip.id)
 
-                // will use this to notify react
+                // notify callback, will use this to notify react
 
                 if (callback) {
           callback(savedClip)

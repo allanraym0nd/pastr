@@ -58,7 +58,7 @@ export function deleteCategory(id: string): void {
 }
 
 export function reorderCategories(categoryIds:string[]):void {
-    const stmt = db.prepare(`UPDATE categories SET position = ? WHERE id =?`) 
+    const stmt = db.prepare(`UPDATE categories SET position = ? WHERE id =?`) // this will be reused multiple times to update each category’s position.
 
     const transaction = db.transaction((ids:string[]) => {
         ids.forEach((id,index) => {
