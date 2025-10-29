@@ -7,6 +7,9 @@ interface ProcessedClip {
         lines?: number
         isUrl?: boolean
         isCode?: boolean
+        width?: number
+        height?: number
+        size?: number
     }
 }
 
@@ -39,12 +42,15 @@ export function processClipboardContent(content: string):ProcessedClip {
 
 } 
 
-export function processImage(imagePath: string): ProcessedClip { 
+export function processImage(imagePath: string, size: {width: number, height: number }): ProcessedClip { 
     return {
         type: 'image',
         content: imagePath,
         preview: imagePath,
-        metadata: {}
+        metadata: {
+            width:size.width,
+            height:size.height
+        }
     }
 
 }
