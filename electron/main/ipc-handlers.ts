@@ -1,8 +1,10 @@
-// Sending clipboard data from Electron's main process to the React app.
-
+// Listens for messages sent by the preload script
+// Listen for requests from React and execute them
+import fs from 'fs'
 import { BrowserWindow, ipcMain, IpcMain,  } from "electron";
 import { getAllClips,getClipsByCategory,updateClipCategory,deleteClip,searchClips } from "./database/clips";
 import { getAllCategories, insertCategory, updateCategory, deleteCategory } from './database/categories'
+import path from 'path';
 
 export function setupIpcHandlers() {
 
@@ -29,6 +31,25 @@ export function setupIpcHandlers() {
   ipcMain.handle("clips:search", async(_event, query: string) => {
     return searchClips(query)
   })
+
+  ipcMain.handle("clips:getImage", async(_event, imagePath:string) => {
+    try {
+      if(fs.existsSync(imagePath)){
+        const imageBuffer =fs.readFileSync(imagePath)
+        const base64 = imageBuffer.toString('base64')
+        const ext = path.extname(imagePath).substring(1)
+        return  `data:image/${ext};base64,${base64}`
+
+      }
+      return null
+    } catch(error){ 
+      console.error('Error reading image:', error)
+      return null
+      
+    }
+   
+  })
+   console.log('IPC handlers registered')
 
     // Categories
   ipcMain.handle('categories:getAll', async () => {
