@@ -1,5 +1,6 @@
 import { Clip } from '@/types'
 import { Copy, Trash2, Clock, GripVertical } from 'lucide-react'
+import { useState,useEffect } from 'react'
 
 interface ClipCardProps {
   clip: Clip
@@ -8,7 +9,22 @@ interface ClipCardProps {
 }
 
 export default function ClipCard({ clip, onCopy, onDelete }: ClipCardProps) {
-  const metadata = clip.metadata ? JSON.parse(clip.metadata) : {}
+  const [imageData, setImageData] = useState<string | null>(null)
+  const metadata = clip.metadata ? JSON.parse(clip.metadata) : {} 
+
+
+  useEffect(() => {
+    if(clip.type === 'image' && clip.content) {
+      console.log('Loading image from path:', clip.content)
+      window.electron.clips.getImage(clip.content).then(data => {
+         console.log('Image data received:', data ? 'Yes (base64)' : 'No')
+        if (data) { 
+          setImageData(data)
+        }
+      })
+    }
+
+  },[clip.type, clip.content])
   
   const getCardColor = () => {
     switch (clip.type) {
@@ -36,9 +52,9 @@ export default function ClipCard({ clip, onCopy, onDelete }: ClipCardProps) {
   } 
 
   //making card dragable 
-  const handleDragStart = (e: React.DragEvent) => {
+  const handleDragStart = (e: React.DragEvent) => { 
     e.dataTransfer.effectAllowed = "move"
-    e.dataTransfer.setData("clipId",clip.id)
+    e.dataTransfer.setData("clipId",clip.id) //Sets the data that is transferred during the drag operation.
   }
 
 
@@ -101,8 +117,26 @@ export default function ClipCard({ clip, onCopy, onDelete }: ClipCardProps) {
         )}
         
         {clip.type === 'image' && (
+          <div>
+            {imageData ? (
+              <img 
+              src={imageData}
+              alt="Clipboard" 
+              className="w-full h-auto rounded-lg object-cover"
+              style={{ maxHeight: '300px' }}
+              />
+            ) : (
           <div className="aspect-video bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg flex items-center justify-center">
             <span className="text-5xl">🖼️</span>
+          </div>
+        )}
+        {metadata.width && metadata.height && (
+          <div className="mt-3 pt-3 border-t border-gray-100">
+                <span className="text-xs text-gray-400">
+                  {metadata.width} × {metadata.height}
+                </span>
+              </div>
+            )}
           </div>
         )}
 
