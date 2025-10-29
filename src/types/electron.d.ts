@@ -24,6 +24,7 @@ export interface ElectronAPI {
     delete: (clipId: string) => Promise<{ success: boolean }>
     updateClipCategory: (clipId: string, categoryId: string | null) => Promise<{ success: boolean }>
     search: (query: string) => Promise<Clip[]>
+    getImage: (imagePath: string) => Promise<string | null>
     onNew: (callback: (clip: Clip) => void) => () => void
   }
   categories: {
