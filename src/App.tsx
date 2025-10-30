@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react'
 import TopBar from './components/layout/TopBar'
 import ClipGrid from './components/clipboard/ClipGrid'
 import AddCategoryModal from './components/categories/AddCategoryModal'
+import SettingsModal, {AppSettings} from './components/settings/SettingsModal'
 import { Clip, Category } from './types'
+
+const DEFAULT_SETTINGS: AppSettings = {
+  historyLimitDays:30,
+  globalShortcut: 'CommandOrControl+Shift+V'
+}
 
 function App() {
   const [clips, setClips] = useState<Clip[]>([])
@@ -10,11 +16,18 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false)
+  const [showSettingsModal,setShowSettingsModal] = useState(false)
+  const [settings,setSettings] = useState<AppSettings>(DEFAULT_SETTINGS)
 
   useEffect(() => {
     window.electron.categories.getAll().then(setCategories)
     loadClips()
 
+    // Load settings from localStorage
+    const savedSettings = localStorage.getItem('app-settings')
+    if(savedSettings){
+      setSettings(JSON.parse(savedSettings))
+    }
     const unsubscribe = window.electron.clips.onNew((newClip) => {
       setClips(prev => [newClip, ...prev])
     })
@@ -75,6 +88,19 @@ function App() {
     setCategories(prev => [...prev, newCategory])
   }
 
+  const handleSaveSettings = (newSettings: AppSettings) => {
+    setSettings(newSettings)
+    localStorage.setItems('app-settings', JSON.stringify(newSettings))
+  }
+
+
+  const handleClearAll = async() => {
+      for (const clip of clips){
+        await window.electron.clips.delete(clip.id)
+      }
+    setClips([])
+
+  }
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       <TopBar
@@ -85,6 +111,7 @@ function App() {
         onSearchChange={setSearchQuery}
         onDropClip={handleDropClip}
         onAddCategory={() => setShowAddCategoryModal(true)}
+        onOpenSettings={() => setShowSettingsModal(true)}
       />
       
       <div className="flex-1 overflow-y-auto">
@@ -101,6 +128,15 @@ function App() {
           onClose={() => setShowAddCategoryModal(false)}
           onAdd={handleAddCategory}
        />
+      )}
+
+      {showSettingsModal && (
+        <SettingsModal 
+          onClose={() => setShowSettingsModal(false)}
+          onClearAll={() => handleClearAll}
+          onSaveSettings={() => handleSaveSettings}
+          currentSettings={settings}
+        />
       )}
     </div>
     

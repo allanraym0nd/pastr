@@ -1,4 +1,4 @@
-import { Search, Plus } from 'lucide-react'
+import { Search, Plus, Settings } from 'lucide-react'
 import { Category } from '@/types'
 import { useState } from 'react'
 
@@ -10,6 +10,7 @@ interface TopBarProps {
   onSearchChange: (query: string) => void
   onDropClip: (clipId: string, categoryId: string | null) => void
   onAddCategory: () => void
+  onOpenSettings: () => void
 }
 
 export default function TopBar({
@@ -19,7 +20,8 @@ export default function TopBar({
   searchQuery,
   onSearchChange,
   onDropClip,
-  onAddCategory
+  onAddCategory,
+  onOpenSettings
 }: TopBarProps) {
   const [dragOverCategory, setDragOverCategory] = useState<string | null>(null)
 
@@ -117,6 +119,15 @@ export default function TopBar({
             <Plus className="w-4 h-4" />
           </button>
         </div>
+
+          {/*settings button*/}
+        <button
+          onClick={onOpenSettings}
+          className="flex items-center justify-center w-8 h-8 rounded-full bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
+          title="Settings"
+        >
+          <Settings className="w-4 h-4" />
+        </button>
       </div>
     </div>
   )
