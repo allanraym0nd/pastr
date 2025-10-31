@@ -1,5 +1,5 @@
 {
-  "name": "clipboard-app",
+  "name": "pastr",
   "version": "1.0.0",
   "main": "dist-electron/main/index.js",
   "type": "module",
@@ -9,9 +9,10 @@
     "preview": "vite preview"
   },
   "keywords": [],
+  "productName": "Pastr",
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Clipboard manager for Mac",
   "dependencies": {
     "@types/electron-squirrel-startup": "^1.0.2",
     "better-sqlite3": "^12.4.1",
