@@ -102,3 +102,24 @@ export function deleteAllClips():void {
 
 }
 
+
+export function deleteOldClips(daysOld: number): number {
+  if(daysOld === -1){
+    console.log('History limit set to "Never", skipping cleanup')
+
+    return 0
+  }
+
+  const cutOffDate = Date.now() - (daysOld * 24 * 60 * 60 * 1000)
+  const stmt = db.prepare(` 
+    DELETE FROM clips
+    where created_at < ?`)
+
+    const result = stmt.run(cutOffDate)
+    const deletedCount = result.changes
+    
+
+    console.log(`Deleted ${deletedCount} clips older than ${daysOld} days`)
+    return deletedCount
+
+}
