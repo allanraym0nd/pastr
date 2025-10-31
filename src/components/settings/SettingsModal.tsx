@@ -31,7 +31,9 @@ export default function SettingsModal ({
     }
 
     const handleClearAll = () => {
+       console.log('SettingsModal: handleClearAll called')
         onClearAll()
+        console.log('SettingsModal: onClearAll callback executed')
         setShowClearConfirm(false)
         onClose()
     }
