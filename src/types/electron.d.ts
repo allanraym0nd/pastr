@@ -22,6 +22,7 @@ export interface ElectronAPI {
     getAll: (limit?: number) => Promise<Clip[]>
     getByCategory: (categoryId: string) => Promise<Clip[]>
     delete: (clipId: string) => Promise<{ success: boolean }>
+    deleteAll: () => Promise<{success:boolean}>
     updateClipCategory: (clipId: string, categoryId: string | null) => Promise<{ success: boolean }>
     search: (query: string) => Promise<Clip[]>
     getImage: (imagePath: string) => Promise<string | null>
