@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'; 
+import { app, BrowserWindow, globalShortcut, ipcMain } from 'electron'; 
 import path from 'path';
 import { fileURLToPath } from 'url'; //esm
 import squirrelStartup from 'electron-squirrel-startup';
@@ -42,9 +42,31 @@ function createWindow() {
         mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
     }
 
-    mainWindow.on('close', () => {
+    mainWindow.on('closed', () => {
         mainWindow = null
     })
+}
+
+function registerGlobalShortcut(shortcut: string) {
+    globalShortcut.unregisterAll()
+
+    const success = globalShortcut.register(shortcut, () => {
+        if(mainWindow){
+            if(mainWindow.isMinimized()){
+                mainWindow.restore()
+            }
+            if(!mainWindow.isVisible()){
+                mainWindow.show()
+            } else {
+                createWindow()
+            }
+        }
+    })
+    if (success) {
+    console.log(`Global shortcut ${shortcut} registered successfully`)
+  } else {
+    console.error(`Failed to register global shortcut: ${shortcut}`)
+  }
 }
 
 app.whenReady().then(() => {
@@ -54,6 +76,8 @@ app.whenReady().then(() => {
 
     console.log('Categories:', getAllCategories())
     console.log('Clips:', getAllClips())
+
+    registerGlobalShortcut('CommandOrControl+Shift+V')
 
     createWindow()
 
@@ -74,7 +98,13 @@ app.whenReady().then(() => {
 // Quit when all windows are closed, except on macOS
 app.on('window-all-closed', () => {
     stopClipboardMonitor()
+    globalShortcut.unregisterAll()
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
+
+ipcMain.handle('settings:updateShortcut',async(_event,shortcut:string) => {
+    registerGlobalShortcut(shortcut)
+    return {success:true}
 })
