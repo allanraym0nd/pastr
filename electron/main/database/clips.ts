@@ -95,3 +95,10 @@ export function searchClips(query: string, limit=50): Clip[] {
 
 }
 
+export function deleteAllClips():void {
+  const stmt = db.prepare('DELETE FROM Clips')
+  stmt.run()
+  console.log("All clips deleted")
+
+}
+
