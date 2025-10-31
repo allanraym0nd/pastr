@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('electron', {
     getByCategory: (categoryId: string) => ipcRenderer.invoke('clips:getByCategory', categoryId),
     delete: (clipId: string) => ipcRenderer.invoke('clips:delete', clipId),
     deleteAll: () => ipcRenderer.invoke('clips:deleteAll'),
+    deleteOld: (daysOld:number) => ipcRenderer.invoke("clips:deleteOld", daysOld),
     updateClipCategory: (clipId: string, categoryId: string) => ipcRenderer.invoke("clips:updateClipCategory", clipId,categoryId),
     search: (query: string) => ipcRenderer.invoke('clips:search', query),
     getImage: (imagePath: string) => ipcRenderer.invoke('clips:getImage', imagePath), 
@@ -36,6 +37,10 @@ contextBridge.exposeInMainWorld('electron', {
     update: (id: string, updates: any) => ipcRenderer.invoke('categories:update', id, updates),
     delete: (id: string) => ipcRenderer.invoke('categories:delete', id),
 
+ },
+
+ settings: {
+   updateShortcut: (shortcut: string) => ipcRenderer.invoke("settings:updateShortcut", shortcut)
  }
 
 
