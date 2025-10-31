@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('electron', {
     getAll: (limit?: number) => ipcRenderer.invoke('clips:getAll', limit),
     getByCategory: (categoryId: string) => ipcRenderer.invoke('clips:getByCategory', categoryId),
     delete: (clipId: string) => ipcRenderer.invoke('clips:delete', clipId),
+    deleteAll: () => ipcRenderer.invoke('clips:deleteAll'),
     updateClipCategory: (clipId: string, categoryId: string) => ipcRenderer.invoke("clips:updateClipCategory", clipId,categoryId),
     search: (query: string) => ipcRenderer.invoke('clips:search', query),
     getImage: (imagePath: string) => ipcRenderer.invoke('clips:getImage', imagePath), 
