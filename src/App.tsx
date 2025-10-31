@@ -95,10 +95,23 @@ function App() {
 
 
   const handleClearAll = async() => {
-      for (const clip of clips){
-        await window.electron.clips.delete(clip.id)
-      }
-    setClips([])
+     console.log('App.tsx: handleClearAll called')
+
+    try {
+      
+      const result = await window.electron.clips.deleteAll()
+      console.log('DeleteAll results:', result)
+
+      await loadClips()
+      
+      console.log('Clips reloaded')
+    } catch(error) {
+      console.error("Error clearing clips", error)
+
+    }
+   
+   
+   setClips([]) //clear UI
 
   }
   return (
@@ -133,7 +146,7 @@ function App() {
       {showSettingsModal && (
         <SettingsModal 
           onClose={() => setShowSettingsModal(false)}
-          onClearAll={() => handleClearAll}
+          onClearAll={handleClearAll}
           onSaveSettings={() => handleSaveSettings}
           currentSettings={settings}
         />
