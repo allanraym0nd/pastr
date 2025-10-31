@@ -26,8 +26,19 @@ function App() {
     // Load settings from localStorage
     const savedSettings = localStorage.getItem('app-settings')
     if(savedSettings){
-      setSettings(JSON.parse(savedSettings))
+     const loadedSettings =  JSON.parse(savedSettings)
+     setSettings(loadedSettings)
+    // Run cleanup based on history limit
+    if(loadedSettings.historyLimitDays !== -1){
+      window.electron.clips.deleteOld(loadedSettings.historyLimitDays).then(result => {
+        console.log(`Startup cleanup: Deleted ${result.deletedCount} old clips`)
+        if(result.deletedCount > 0){
+          loadClips()
+        }
+      })
     }
+
+}
     const unsubscribe = window.electron.clips.onNew((newClip) => {
       setClips(prev => [newClip, ...prev])
     })
@@ -88,9 +99,19 @@ function App() {
     setCategories(prev => [...prev, newCategory])
   }
 
-  const handleSaveSettings = (newSettings: AppSettings) => {
+  const handleSaveSettings = async(newSettings: AppSettings) => {
     setSettings(newSettings)
-    localStorage.setItems('app-settings', JSON.stringify(newSettings))
+    localStorage.setItems('app-settings', JSON.stringify(newSettings))    
+
+    await window.electron.settings.updateShortcut(newSettings.globalShortcut)
+
+    // Running cleanup immediately with new settings
+    if(newSettings.historyLimitDays !== -1) {
+     const result =  await window.electron.clips.deleteOld(newSettings.historyLimitDays)
+     if(result.deletedCount > 0){
+      loadClips()
+     }
+    }
   }
 
 
