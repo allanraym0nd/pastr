@@ -2,7 +2,7 @@
 // Listen for requests from React and execute them
 import fs from 'fs'
 import { BrowserWindow, ipcMain, IpcMain,  } from "electron";
-import { getAllClips,getClipsByCategory,updateClipCategory,deleteClip,searchClips, deleteAllClips} from "./database/clips";
+import { getAllClips,getClipsByCategory,updateClipCategory,deleteClip,searchClips, deleteAllClips, deleteOldClips} from "./database/clips";
 import { getAllCategories, insertCategory, updateCategory, deleteCategory } from './database/categories'
 import path from 'path';
 
@@ -53,6 +53,12 @@ export function setupIpcHandlers() {
   ipcMain.handle("clips:deleteAll", async() => {
     deleteAllClips()
     return {success: true}
+
+  })
+
+  ipcMain.handle("clips:deleteOld", async(_event, daysOld:number) => {
+    const deletedCount = deleteOldClips(daysOld)
+    return {success:true, deletedCount}
 
   })
   
