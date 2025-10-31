@@ -23,6 +23,7 @@ export interface ElectronAPI {
     getByCategory: (categoryId: string) => Promise<Clip[]>
     delete: (clipId: string) => Promise<{ success: boolean }>
     deleteAll: () => Promise<{success:boolean}>
+    deleteOld: (daysOld: number) => Promise<{success: boolean, deletedCount: number}>
     updateClipCategory: (clipId: string, categoryId: string | null) => Promise<{ success: boolean }>
     search: (query: string) => Promise<Clip[]>
     getImage: (imagePath: string) => Promise<string | null>
@@ -33,6 +34,9 @@ export interface ElectronAPI {
     create: (name: string, color: string, icon?: string) => Promise<Category>
     update: (id: string, updates: Partial<Category>) => Promise<{ success: boolean }>
     delete: (id: string) => Promise<{ success: boolean }>
+  }
+  settings: {
+    updateShortcut: (shortcut:string) => Promise<{success:boolean}>
   }
 }
 
